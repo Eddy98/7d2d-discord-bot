@@ -37,12 +37,9 @@ const telnetConfig = {
 // IMPORTANT: Define both the file path and the directory path
 const BATCH_FILE_PATH = 'C:\\7dtd_server\\startdedicated.bat';
 
-// <<< 2. Define the directory where the .bat file lives
-// This is the working directory (CWD) we will use.
 const BATCH_DIR = path.dirname(BATCH_FILE_PATH);
 
 // --- Discord Events ---
-
 client.once('ready', () => {
   console.log(`🤖 Logged in as ${client.user.tag}!`);
 });
@@ -57,17 +54,15 @@ client.on('messageCreate', async (message) => {
     await message.reply('Starting 7 Days to Die server...');
     console.log(
       `Attempting to run: ${BATCH_FILE_PATH} from directory: ${BATCH_DIR}`
-    ); // Useful for debugging! // 'exec' is used to execute a shell command.
+    );
 
     exec(
       `"${BATCH_FILE_PATH}"`,
       {
-        cwd: BATCH_DIR, // <<< 3. Add the working directory option
-        shell: true, // <<< 4. Optional: Force shell execution
+        cwd: BATCH_DIR, // Add the working directory option
+        shell: true, // Optional: Force shell execution
       },
       (error, stdout, stderr) => {
-        // ... (rest of your error handling code)
-
         if (error) {
           console.error(`Exec Error: ${error}`);
           message.channel.send(
@@ -75,15 +70,11 @@ client.on('messageCreate', async (message) => {
           );
           return;
         }
-
-        if (stderr) {
-          // console.error(`Stderr: ${stderr}`);
-        }
-
-        message.channel.send(
-          '**✅ 7 Days to Die Server Launched!** Check your PC for the console window.'
-        );
       }
+    );
+
+    message.channel.send(
+      '**✅ 7 Days to Die Server Launched!**\nEsperate como 3 minutos antes de uniter mamaguevo'
     );
   }
 
@@ -93,29 +84,26 @@ client.on('messageCreate', async (message) => {
     const telnet = new Telnet();
 
     try {
-      // 1. Connect to the Telnet port
+      // Connect to the Telnet port
       await telnet.connect(telnetConfig);
 
-      // Get password from environment (ensure it's not null/undefined)
       const telnetPassword = process.env.TELNET_PASSWORD || '';
-
-      // --- Manual Command Sending with Delays (More Robust) ---
 
       console.log('Sending password for Telnet login...');
       await telnet.send(telnetPassword); // Wait for server to process the login
-      await new Promise((resolve) => setTimeout(resolve, 500)); // 3. Send 'saveworld' command.
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       console.log('Sending saveworld...');
       await telnet.send('saveworld'); // Wait for server to save the world (needs a longer pause)
-      await new Promise((resolve) => setTimeout(resolve, 3000)); // 4. Send 'shutdown' command.
+      await new Promise((resolve) => setTimeout(resolve, 3000));
 
       console.log('Sending shutdown...');
       await telnet.send('shutdown'); // Wait a small moment for the command to be sent before server closes the connection
-      await new Promise((resolve) => setTimeout(resolve, 500)); // 5. Clean up connection
+      await new Promise((resolve) => setTimeout(resolve, 500));
       telnet.end();
 
       message.channel.send(
-        '**🛑 7 Days to Die Server Safely Shut Down.** World saved!'
+        '**🛑 7 Days to Die Server Safely Shut Down.** \nYA DANIEL, VETEEE A DORMIR!'
       );
     } catch (e) {
       console.error('Telnet Error:', e); // Check if the connection failed outright (server not running or port blocked)
