@@ -120,6 +120,33 @@ client.on('messageCreate', async (message) => {
       }
     }
   }
+
+  if (command === 'sleepcomputer') {
+    await message.reply('Initiating system sleep sequence...');
+    console.log('Attempting to put the computer to sleep via PowerShell.');
+
+    // This PowerShell command forces the system into the suspend (sleep) state.
+    const sleepCommand =
+      'powershell.exe -Command "Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.Application]::SetSuspendState(\'Suspend\', $false, $false)"';
+
+    exec(sleepCommand, (error, stdout, stderr) => {
+      if (error) {
+        console.error(`Sleep Error: ${error}`);
+        message.channel.send(
+          `**❌ System Sleep Failed:** \n\`\`\`${error.message}\`\`\``
+        );
+        // Note: The execution might throw an error if the process is immediately suspended,
+        // but the system will still sleep. You might need to test this.
+        return;
+      }
+      // Since the system immediately goes to sleep, this line might never execute or send.
+      // The message above is typically the last one seen by the user.
+      console.log('Sleep command executed successfully.');
+    });
+
+    // Send a message immediately, as the exec callback might not fire before sleep.
+    message.channel.send('**😴 Computer is now going to sleep.** Goodbye!');
+  }
 });
 
 client.login(BOT_TOKEN);
