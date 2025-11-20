@@ -31,7 +31,16 @@ const telnetConfig = {
   initialDelay: 500,
 };
 
-// IMPORTANT: Define both the file path and the directory path
+const START_SERVER_COMMAND = 'start7d2d';
+const STOP_SERVER_COMMAND = 'stop7d2d';
+const SLEEP_COMPUTER_COMMAND = 'sleepcomputer';
+
+const ALL_COMMANDS = [
+  START_SERVER_COMMAND,
+  STOP_SERVER_COMMAND,
+  SLEEP_COMPUTER_COMMAND,
+];
+
 const BATCH_FILE_PATH = 'C:\\7dtd_server\\startdedicated.bat';
 const BATCH_DIR = path.dirname(BATCH_FILE_PATH);
 
@@ -43,6 +52,14 @@ client.once('ready', () => {
 client.on('messageCreate', async (message) => {
   if (message.author.bot || !message.content.startsWith('!')) return;
 
+  const args = message.content.slice(1).trim().split(/ +/);
+  const command = args.shift().toLowerCase();
+
+  if (!ALL_COMMANDS.includes(command)) {
+    console.log(`Invalid command entered: ` + command);
+    return message.reply('❌ Invalid command.');
+  }
+
   if (!ALLOWED_USERS.includes(message.author.username)) {
     console.log(
       `Unauthorized user attempted command: ${message.author.tag} (${message.author.username})`
@@ -50,11 +67,8 @@ client.on('messageCreate', async (message) => {
     return message.reply('❌ You are not authorized to use this command.');
   }
 
-  const args = message.content.slice(1).trim().split(/ +/);
-  const command = args.shift().toLowerCase();
-
   // ------------------------------------------------ // 🚀 THE SERVER START COMMAND
-  if (command === 'start7d2d') {
+  if (command === START_SERVER_COMMAND) {
     await message.reply('Starting 7 Days to Die server...');
     console.log(
       `Attempting to run: ${BATCH_FILE_PATH} from directory: ${BATCH_DIR}`
@@ -83,7 +97,7 @@ client.on('messageCreate', async (message) => {
   }
 
   // ------------------------------------------------ // 🛑 THE SERVER STOP COMMAND
-  if (command === 'stop7d2d') {
+  if (command === STOP_SERVER_COMMAND) {
     await message.reply('Attempting safe server shutdown via Telnet...');
 
     const telnet = new Telnet();
@@ -125,7 +139,7 @@ client.on('messageCreate', async (message) => {
   }
 
   // ------------------------------------------------ // 🌙 THE SLEEP COMPUTER COMMAND
-  if (command === 'sleepcomputer') {
+  if (command === SLEEP_COMPUTER_COMMAND) {
     await message.reply('Initiating system sleep sequence...');
     console.log('Attempting to put the computer to sleep via PowerShell.');
 
